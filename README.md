@@ -4,6 +4,6 @@
 
 ### [Spec](SPEC.md)
 
-### [ROADMAP](ROADMAP.md)
+### [Roadmap](ROADMAP.md)
 
 ### [References](REFERENCES.md)
