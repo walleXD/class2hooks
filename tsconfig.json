@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "lib": ["es5", "es2015.promise"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true
+  },
+  "include": ["**/src/**/*.ts"],
+  "exclude": ["**/node_modules/**"]
+}
