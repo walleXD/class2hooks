@@ -2,7 +2,7 @@
 
 ## Refactor React Class Components into Functional components
 
-### Set up development environment
+### Set up for development
 
 1. Make sure node `10.15.1` is installed in your machine
 2. Install `yarn` and `lerna` globally using `npm`
