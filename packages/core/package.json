@@ -4,12 +4,17 @@
   "main": "src/index.ts",
   "license": "MIT",
   "devDependencies": {
+    "@types/jscodeshift": "^0.6.0",
     "@types/node": "^11.9.4",
     "ts-node": "^8.0.2",
     "ts-node-dev": "^1.0.0-pre.32",
     "typescript": "^3.3.3"
   },
   "scripts": {
-    "start": "tsnd --respawn ."
+    "start": "jscodeshift -t . sample"
+  },
+  "dependencies": {
+    "jscodeshift": "^0.6.3",
+    "recast": "^0.17.3"
   }
 }
