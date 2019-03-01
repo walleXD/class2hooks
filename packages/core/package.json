@@ -5,6 +5,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jscodeshift": "^0.6.0",
+    "@types/lodash": "^4.14.121",
     "@types/node": "^11.9.4",
     "ts-node": "^8.0.2",
     "ts-node-dev": "^1.0.0-pre.32",
@@ -15,6 +16,7 @@
   },
   "dependencies": {
     "jscodeshift": "^0.6.3",
+    "lodash": "^4.17.11",
     "recast": "^0.17.3"
   }
 }
