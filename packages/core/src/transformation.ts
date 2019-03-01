@@ -11,7 +11,7 @@ const isRefactorable = (file: FileInfo, api: API, options: Options) => {
   const hasJSX = () => path.findJSXElements().size() > 0
 
   console.log(source)
-  console.log(hasJSX(), isClass(), isReactComponent(), hasJSX())
+  console.log(hasJSX(), isClass(), hasJSX())
 
   return {
     source,
