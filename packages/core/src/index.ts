@@ -1,4 +1,5 @@
 import { API, FileInfo, Options, ASTNode, ASTPath } from "jscodeshift"
+import { isRefactorable } from "./transformation"
 
 interface RuntimeOptions {
   refactorState: boolean
@@ -24,27 +25,16 @@ export default (file: FileInfo, api: API, options: Options) => {
 
     const runtimeOptions: RuntimeOptions = { ...defaultOptions, ...options }
 
-    return file.source
+    isRefactorable(file, api, runtimeOptions)
+
+    return source
+
+    // return compose(
+    //   runTransforms,
+    //   getRefactorables,
+    //   isRefactorable
+    // )({ source, api, options: runtimeOptions })
   } catch (e) {
     api.report(e.message)
   }
 }
-
-const isRefactorable = (
-  source: String,
-  api: API,
-  options: RuntimeOptions
-): boolean => false
-
-const getRefactorables = (
-  source: String,
-  api: API,
-  options: RuntimeOptions
-): ASTPath<ASTNode>[] => []
-
-const runTransforms = (
-  transforms: ASTPath<ASTNode>[],
-  source: String,
-  api: API,
-  options: RuntimeOptions
-) => {}
