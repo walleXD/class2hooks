@@ -8,8 +8,11 @@ import {
   hasJSX,
   hasComponentDidCatchMethod,
   hasGetDerivedStateFromErrorMethod
-} from "./checks"
+} from "./utils"
 
+/**
+ * Runs initial checks on file
+ */
 const runChecks = (
   root: Collection<ASTNode>,
   options?: RuntimeOptions

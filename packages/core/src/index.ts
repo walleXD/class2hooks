@@ -1,7 +1,9 @@
-import { API, FileInfo, Options } from "jscodeshift"
+import { API, FileInfo, Options, ASTNode } from "jscodeshift"
+import { Collection } from "jscodeshift/src/Collection"
 
 import { RuntimeOptions } from "./types"
 import runChecks from "./runChecks"
+import { skipTransformation } from "./utils"
 
 /**
  * Approach
@@ -10,28 +12,24 @@ import runChecks from "./runChecks"
  * - If the the initial check passes, then check for where/what we can refactor
  * - Then run transformations based on the refactorable collections
  */
-
-const runTransformation = (file: FileInfo, api: API, options: Options) => {
+export default (file: FileInfo, api: API, options: Options) => {
   const j = api.jscodeshift
-  const root = j(file.source)
+  const root: Collection<ASTNode> = j(file.source)
 
-  try {
-    const defaultOptions: RuntimeOptions = {
-      refactorState: false
-    }
-
-    const runtimeOptions: RuntimeOptions = { ...defaultOptions, ...options }
-
-    const isTransformable: Boolean = runChecks(root, runtimeOptions)
-
-    console.log(isTransformable)
-
-    if (!isTransformable) throw new Error("Not Transformable 😅")
-
-    return root.toSource()
-  } catch (e) {
-    api.report(e.message)
+  const defaultOptions: RuntimeOptions = {
+    refactorState: false
   }
-}
 
-export default runTransformation
+  const runtimeOptions: RuntimeOptions = { ...defaultOptions, ...options }
+
+  const isTransformable: Boolean = runChecks(root, runtimeOptions)
+
+  console.log(isTransformable)
+
+  if (!isTransformable) {
+    skipTransformation(root, api, "Failed initial Check")
+    return null
+  }
+
+  return root.toSource()
+}

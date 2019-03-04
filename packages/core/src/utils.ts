@@ -2,7 +2,9 @@ import {
   ImportDeclaration,
   ASTNode,
   ImportSpecifier,
-  ClassDeclaration
+  ClassDeclaration,
+  ASTPath,
+  API
 } from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
 
@@ -144,6 +146,15 @@ const hasGetDerivedStateFromErrorMethod = (
   return false
 }
 
+const skipTransformation = (
+  path: Collection<ASTNode>,
+  api: API,
+  msg: string
+) => {
+  // TODO: Add better error reporting
+  api.report(msg)
+}
+
 export {
   hasModule,
   hasReact,
@@ -156,5 +167,6 @@ export {
   findComponentDidCatchMethod,
   hasComponentDidCatchMethod,
   findGetDerivedStateFromErrorMethod,
-  hasGetDerivedStateFromErrorMethod
+  hasGetDerivedStateFromErrorMethod,
+  skipTransformation
 }
