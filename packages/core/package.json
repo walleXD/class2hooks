@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "jscodeshift": "^0.6.3",
+    "jscodeshift-helper": "^1.1.0",
     "lodash": "^4.17.11",
     "recast": "^0.17.3"
   }

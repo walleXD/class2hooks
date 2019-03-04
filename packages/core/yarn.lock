@@ -1429,6 +1429,11 @@ js-levenshtein@^1.1.3:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
+jscodeshift-helper@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/jscodeshift-helper/-/jscodeshift-helper-1.1.0.tgz#7ed28b576021517452b938ee02e4edc799c1cbf7"
+  integrity sha1-ftKLV2AhUXRSuTjuAuTtx5nBy/c=
+
 jscodeshift@^0.6.3:
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/jscodeshift/-/jscodeshift-0.6.3.tgz#f107d9aa5a61096e434c4b44016faeda676450c5"
