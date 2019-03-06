@@ -1,13 +1,15 @@
 import { API, FileInfo, Options, ASTNode } from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
 
-import { RuntimeOptions } from "./types"
-import runChecks from "./runChecks"
-import { skipTransformation } from "./utils"
+import { RuntimeOptions } from "../lib/types"
+import runChecks from "../lib/runChecks"
+import { skipTransformation } from "../lib/utils"
 
 /**
+ * Pure Class To Functional Component
+ * =============================
  * Approach
- * =========
+ * ---------
  * - Check if the passed source is refactorable, i.e. looks for things we can't refactor
  * - If the the initial check passes, then check for where/what we can refactor
  * - Then run transformations based on the refactorable collections
@@ -23,8 +25,6 @@ export default (file: FileInfo, api: API, options: Options) => {
   const runtimeOptions: RuntimeOptions = { ...defaultOptions, ...options }
 
   const isTransformable: Boolean = runChecks(root, runtimeOptions)
-
-  console.log(isTransformable)
 
   if (!isTransformable) {
     skipTransformation(root, api, "Failed initial Check")

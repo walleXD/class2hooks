@@ -3,10 +3,13 @@ import {
   ASTNode,
   ImportSpecifier,
   ClassDeclaration,
-  ASTPath,
   API
 } from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
+import { runInlineTest } from "jscodeshift/src/testUtils"
+import { join } from "path"
+import { readFileSync } from "fs"
+import { RuntimeOptions } from "./types"
 
 // ---------------------------------------------------------------------------
 // Checks if the file imports a certain module
@@ -155,6 +158,54 @@ const skipTransformation = (
   api.report(msg)
 }
 
+// ---------------------------------------------------------------------------
+// returns jest bootstapping fn to run fixtures
+const runTest = (
+  dirName: string,
+  transformName: string,
+  options?: RuntimeOptions,
+  testFilePrefix?: string
+) => {
+  if (!testFilePrefix) {
+    testFilePrefix = transformName
+  }
+
+  const fixtureDir = join(dirName, "..", "__testfixtures__")
+  const inputPath = join(fixtureDir, testFilePrefix + ".input.js")
+  const source = readFileSync(inputPath, "utf8")
+  const expectedOutput = readFileSync(
+    join(fixtureDir, testFilePrefix + ".output.js"),
+    "utf8"
+  )
+  // Assumes transform is one level up from __tests__ directory
+  const module = require(join(dirName, "..", transformName + ".ts"))
+  runInlineTest(
+    module,
+    options,
+    {
+      path: inputPath,
+      source
+    },
+    expectedOutput
+  )
+}
+
+const defineTest = (
+  dirName: string,
+  transformName: string,
+  options?: RuntimeOptions,
+  testFilePrefix?: string
+) => {
+  const testName = testFilePrefix
+    ? `transforms correctly using "${testFilePrefix}" data`
+    : "transforms correctly"
+  describe(transformName, () => {
+    it(testName, () => {
+      runTest(dirName, transformName, options, testFilePrefix)
+    })
+  })
+}
+
 export {
   hasModule,
   hasReact,
@@ -168,5 +219,6 @@ export {
   hasComponentDidCatchMethod,
   findGetDerivedStateFromErrorMethod,
   hasGetDerivedStateFromErrorMethod,
-  skipTransformation
+  skipTransformation,
+  defineTest
 }

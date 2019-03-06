@@ -1,18 +1,21 @@
 {
   "name": "@class2hooks/core",
   "version": "0.0.1",
-  "main": "src/index.ts",
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^24.0.9",
     "@types/jscodeshift": "^0.6.0",
     "@types/lodash": "^4.14.121",
     "@types/node": "^11.9.4",
+    "jest": "^24.1.0",
+    "ts-jest": "^24.0.0",
     "ts-node": "^8.0.2",
     "ts-node-dev": "^1.0.0-pre.32",
     "typescript": "^3.3.3"
   },
   "scripts": {
-    "start": "jscodeshift -t . sample"
+    "test": "jest",
+    "dev": "yarn test --watch"
   },
   "dependencies": {
     "jscodeshift": "^0.6.3",
