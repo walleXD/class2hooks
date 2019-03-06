@@ -171,14 +171,19 @@ const runTest = (
   }
 
   const fixtureDir: string = join(dirName, "..", "__testfixtures__")
-  const inputPath: string = join(fixtureDir, testFilePrefix + ".input.js")
+  const inputPath: string = join(fixtureDir, testFilePrefix, "index.input.js")
   const source: string = readFileSync(inputPath, "utf8")
   const expectedOutput: string = readFileSync(
-    join(fixtureDir, testFilePrefix + ".output.js"),
+    join(fixtureDir, testFilePrefix, "index.output.js"),
     "utf8"
   )
   // Assumes transform is one level up from __tests__ directory
-  const module: NodeModule = require(join(dirName, "..", transformName + ".ts"))
+  const module: NodeModule = require(join(
+    dirName,
+    "..",
+    transformName,
+    "index.ts"
+  ))
   runInlineTest(
     module,
     options,

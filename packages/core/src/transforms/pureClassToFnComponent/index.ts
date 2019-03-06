@@ -1,9 +1,9 @@
 import { API, FileInfo, Options, ASTNode } from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
 
-import { RuntimeOptions } from "../lib/types"
-import runChecks from "../lib/runChecks"
-import { skipTransformation } from "../lib/utils"
+import { RuntimeOptions } from "../../lib/types"
+import runChecks from "../../lib/runChecks"
+import { skipTransformation } from "../../lib/utils"
 
 /**
  * Pure Class To Functional Component
