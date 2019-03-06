@@ -170,11 +170,16 @@ const runTest = (
     testFilePrefix = transformName
   }
 
-  const fixtureDir: string = join(dirName, "..", "__testfixtures__")
-  const inputPath: string = join(fixtureDir, testFilePrefix, "index.input.js")
+  const fixtureDir: string = join(
+    dirName,
+    "..",
+    transformName,
+    "__testfixtures__"
+  )
+  const inputPath: string = join(fixtureDir, "index.input.js")
   const source: string = readFileSync(inputPath, "utf8")
   const expectedOutput: string = readFileSync(
-    join(fixtureDir, testFilePrefix, "index.output.js"),
+    join(fixtureDir, "index.output.js"),
     "utf8"
   )
   // Assumes transform is one level up from __tests__ directory
