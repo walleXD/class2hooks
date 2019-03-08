@@ -3,6 +3,10 @@ import {
   ASTNode,
   ImportSpecifier,
   ClassDeclaration,
+  ClassBody,
+  MethodDefinition,
+  Program,
+  Identifier,
   API
 } from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
@@ -68,24 +72,24 @@ const findReactES6ClassDeclarationByParent = (
 
   const selector = componentImport
     ? {
-        superClass: {
-          type: "Identifier",
-          name: componentImport
-        }
+      superClass: {
+        type: "Identifier",
+        name: componentImport
       }
+    }
     : {
-        superClass: {
-          type: "MemberExpression",
-          object: {
-            type: "Identifier",
-            name: "React"
-          },
-          property: {
-            type: "Identifier",
-            name: "Component"
-          }
+      superClass: {
+        type: "MemberExpression",
+        object: {
+          type: "Identifier",
+          name: "React"
+        },
+        property: {
+          type: "Identifier",
+          name: "Component"
         }
       }
+    }
 
   return path.find(ClassDeclaration, selector)
 }
@@ -125,28 +129,39 @@ const hasJSX = (path: Collection<ASTNode>): Boolean => findJSX(path).size() > 0
 // ToDo: Find if the React Component has findComponentDidCatch Method
 const findComponentDidCatchMethod = (
   path: Collection<ASTNode>
-): Collection<ASTNode> => path
-
+): Collection<ASTNode> => {
+  // Filter our path down to a collection of AST nodes that ONLY contains items in the following form: 
+  // ClassBody -> MethodDefinition -> Value -> Key -> KeyName : [fnName]
+  // If the [fnName] === untransformable, then we add it to our modified path collection. 
+  path = path.find(MethodDefinition).filter(element => element.value.key['name'] === 'componentDidCatch');
+  return path;
+}
 // ---------------------------------------------------------------------------
 // Checks if the file has findComponentDidCatch Method
 const hasComponentDidCatchMethod = (path: Collection<ASTNode>): Boolean => {
-  // return findComponentDidCatchMethod(path).size() === 1
-  return false
+  // If our path has 1 or more componentDidCatchMethods, return true
+  return findComponentDidCatchMethod(path).size() >= 1;
 }
 
 // ---------------------------------------------------------------------------
 // ToDo: Find if the React Component has findGetDerivedStateFromError Method
 const findGetDerivedStateFromErrorMethod = (
   path: Collection<ASTNode>
-): Collection<ASTNode> => path
+): Collection<ASTNode> => {
+  // Filter our path down to a collection of AST nodes that ONLY contains items in the following form: 
+  // ClassBody -> MethodDefinition -> Value -> Key -> KeyName : [fnName]
+  // If the [fnName] === untransformable, then we add it to our modified path collection. 
+  path = path.find(MethodDefinition).filter(element => element.value.key['name'] === 'getDerivedStateFromError');
+  return path;
+}
 
 // ---------------------------------------------------------------------------
 // Checks if the file has findGetDerivedStateFromError Method
 const hasGetDerivedStateFromErrorMethod = (
   path: Collection<ASTNode>
 ): Boolean => {
-  // return findGetDerivedStateFromErrorMethod(path).size() === 1
-  return false
+  // If our path has 1 or more getDerivedStateFromError, return true
+  return findGetDerivedStateFromErrorMethod(path).size() >= 1;
 }
 
 const skipTransformation = (
@@ -155,7 +170,8 @@ const skipTransformation = (
   msg: string
 ) => {
   // TODO: Add better error reporting
-  api.report(msg)
+  console.log(msg); // <== commented out api.report and used console.log for error logging
+  // api.report(msg);
 }
 
 // ---------------------------------------------------------------------------
