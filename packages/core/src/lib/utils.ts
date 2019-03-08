@@ -149,14 +149,9 @@ const hasGetDerivedStateFromErrorMethod = (
   return false
 }
 
-const skipTransformation = (
-  path: Collection<ASTNode>,
-  api: API,
-  msg: string
-) => {
+const skipTransformation = (path: Collection<ASTNode>, msg: string) =>
   // TODO: Add better error reporting
-  api.report(msg)
-}
+  console.warn(msg)
 
 // ---------------------------------------------------------------------------
 // returns jest bootstapping fn to run fixtures
