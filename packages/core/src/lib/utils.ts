@@ -140,7 +140,7 @@ const findComponentDidCatchMethod = (
 // Checks if the file has findComponentDidCatch Method
 const hasComponentDidCatchMethod = (path: Collection<ASTNode>): Boolean => {
   // If our path has 1 or more componentDidCatchMethods, return true
-  return findComponentDidCatchMethod(path).size() >= 1;
+  return findComponentDidCatchMethod(path).size() > 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -161,7 +161,7 @@ const hasGetDerivedStateFromErrorMethod = (
   path: Collection<ASTNode>
 ): Boolean => {
   // If our path has 1 or more getDerivedStateFromError, return true
-  return findGetDerivedStateFromErrorMethod(path).size() >= 1;
+  return findGetDerivedStateFromErrorMethod(path).size() > 0;
 }
 
 const skipTransformation = (
