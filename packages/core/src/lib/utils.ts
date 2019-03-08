@@ -164,15 +164,10 @@ const hasGetDerivedStateFromErrorMethod = (
   return findGetDerivedStateFromErrorMethod(path).size() > 0;
 }
 
-const skipTransformation = (
-  path: Collection<ASTNode>,
-  api: API,
-  msg: string
-) => {
+const skipTransformation = (path: Collection<ASTNode>, msg: string) =>
   // TODO: Add better error reporting
-  console.log(msg); // <== commented out api.report and used console.log for error logging
-  // api.report(msg);
-}
+
+  console.warn(msg)
 
 // ---------------------------------------------------------------------------
 // returns jest bootstapping fn to run fixtures
@@ -186,15 +181,25 @@ const runTest = (
     testFilePrefix = transformName
   }
 
-  const fixtureDir = join(dirName, "..", "__testfixtures__")
-  const inputPath = join(fixtureDir, testFilePrefix + ".input.js")
-  const source = readFileSync(inputPath, "utf8")
-  const expectedOutput = readFileSync(
-    join(fixtureDir, testFilePrefix + ".output.js"),
+  const fixtureDir: string = join(
+    dirName,
+    "..",
+    transformName,
+    "__testfixtures__"
+  )
+  const inputPath: string = join(fixtureDir, "index.input.js")
+  const source: string = readFileSync(inputPath, "utf8")
+  const expectedOutput: string = readFileSync(
+    join(fixtureDir, "index.output.js"),
     "utf8"
   )
   // Assumes transform is one level up from __tests__ directory
-  const module = require(join(dirName, "..", transformName + ".ts"))
+  const module: NodeModule = require(join(
+    dirName,
+    "..",
+    transformName,
+    "index.ts"
+  ))
   runInlineTest(
     module,
     options,

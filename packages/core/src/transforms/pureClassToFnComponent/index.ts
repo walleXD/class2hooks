@@ -1,9 +1,9 @@
 import { API, FileInfo, Options, ASTNode } from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
 
-import { RuntimeOptions } from "../lib/types"
-import runChecks from "../lib/runChecks"
-import { skipTransformation } from "../lib/utils"
+import { RuntimeOptions } from "lib/types"
+import runChecks from "lib/runChecks"
+import { skipTransformation } from "lib/utils"
 
 /**
  * Pure Class To Functional Component
@@ -27,9 +27,19 @@ export default (file: FileInfo, api: API, options: Options) => {
   const isTransformable: Boolean = runChecks(root, runtimeOptions)
 
   if (!isTransformable) {
-    skipTransformation(root, api, "Failed initial Check")
+    skipTransformation(root, "Failed initial Check")
     return null
   }
 
-  return root.toSource()
+  const transformationSuccess: Boolean = runTransformation(root)
+
+  if (transformationSuccess) return root.toSource()
+
+  skipTransformation(root, "Transformation Failed")
+  return null
+}
+
+// TODO: refactor return to return object of success / failure w/ message for failure
+const runTransformation = (path: Collection<ASTNode>) => {
+  return false
 }
