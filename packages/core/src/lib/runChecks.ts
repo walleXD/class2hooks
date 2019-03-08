@@ -12,6 +12,8 @@ import {
 
 /**
  * Runs initial checks on file
+ * TODO: improve precondition checks
+ * TODO: add more transform specific precondition checks
  */
 const runChecks = (
   root: Collection<ASTNode>,
