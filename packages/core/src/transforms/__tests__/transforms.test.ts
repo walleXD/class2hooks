@@ -1,4 +1,4 @@
-import { defineTest } from "../../lib/utils"
+import { defineTest } from "lib/utils"
 import { readdirSync, statSync } from "fs"
 import { join } from "path"
 
