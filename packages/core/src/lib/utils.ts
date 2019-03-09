@@ -3,6 +3,10 @@ import {
   ASTNode,
   ImportSpecifier,
   ClassDeclaration,
+  ClassBody,
+  MethodDefinition,
+  Program,
+  Identifier,
   API
 } from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
@@ -122,35 +126,40 @@ const findJSX = (path: Collection<ASTNode>): Collection<ASTNode> =>
 const hasJSX = (path: Collection<ASTNode>): Boolean => findJSX(path).size() > 0
 
 // ---------------------------------------------------------------------------
-// ToDo: Find if the React Component has findComponentDidCatch Method
+// Filter our path down to a collection of AST nodes that ONLY contains items in the following form:
+// ClassBody -> MethodDefinition -> Value -> Key -> KeyName : [fnName]. If [fnName] === untransformable, then we add it to our modified path collection.
 const findComponentDidCatchMethod = (
   path: Collection<ASTNode>
-): Collection<ASTNode> => path
-
-// ---------------------------------------------------------------------------
-// Checks if the file has findComponentDidCatch Method
-const hasComponentDidCatchMethod = (path: Collection<ASTNode>): Boolean => {
-  // return findComponentDidCatchMethod(path).size() === 1
-  return false
+): Collection<ASTNode> => {
+  return path
+    .find(MethodDefinition)
+    .filter(element => element.value.key["name"] === "componentDidCatch")
 }
+// ---------------------------------------------------------------------------
+// Checks if the file has findComponentDidCatch Method. If our path has 1 or more componentDidCatchMethods, return true
+const hasComponentDidCatchMethod = (path: Collection<ASTNode>): Boolean =>
+  findComponentDidCatchMethod(path).size() > 0
 
 // ---------------------------------------------------------------------------
-// ToDo: Find if the React Component has findGetDerivedStateFromError Method
+// Filter our path down to a collection of AST nodes that ONLY contains items in the following form:
+// ClassBody -> MethodDefinition -> Value -> Key -> KeyName : [fnName]. If [fnName] === untransformable, then we add it to our modified path collection.
 const findGetDerivedStateFromErrorMethod = (
   path: Collection<ASTNode>
-): Collection<ASTNode> => path
+): Collection<ASTNode> => {
+  return path
+    .find(MethodDefinition)
+    .filter(element => element.value.key["name"] === "getDerivedStateFromError")
+}
 
 // ---------------------------------------------------------------------------
-// Checks if the file has findGetDerivedStateFromError Method
+// Checks if the file has findGetDerivedStateFromError Method. If our path has 1 or more 'getDerivedStateFromError's, return true
 const hasGetDerivedStateFromErrorMethod = (
   path: Collection<ASTNode>
-): Boolean => {
-  // return findGetDerivedStateFromErrorMethod(path).size() === 1
-  return false
-}
+): Boolean => findGetDerivedStateFromErrorMethod(path).size() > 0
 
 const skipTransformation = (path: Collection<ASTNode>, msg: string) =>
   // TODO: Add better error reporting
+
   console.warn(msg)
 
 // ---------------------------------------------------------------------------

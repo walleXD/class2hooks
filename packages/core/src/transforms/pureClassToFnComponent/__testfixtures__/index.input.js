@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 
 class SimpleComponents extends Component {
+
   render() {
     return (
       <div>
