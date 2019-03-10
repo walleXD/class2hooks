@@ -1,9 +1,32 @@
-import { API, FileInfo, Options, ASTNode } from "jscodeshift"
+import {
+  API,
+  FileInfo,
+  Options,
+  ASTNode,
+  variableDeclaration,
+  identifier,
+  variableDeclarator,
+  arrowFunctionExpression,
+  blockStatement,
+  returnStatement,
+  ImportDeclaration,
+  importDeclaration,
+  importDefaultSpecifier,
+  literal
+} from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
 
 import { RuntimeOptions } from "lib/types"
 import runChecks from "lib/runChecks"
-import { skipTransformation } from "lib/utils"
+import {
+  skipTransformation,
+  findReactES6ClassDeclaration,
+  isRenderMethod,
+  getClassName,
+  hasOnlyRenderMethod,
+  findModule
+} from "lib/utils"
+import { NodePath } from "ast-types"
 
 /**
  * Pure Class To Functional Component
@@ -31,15 +54,45 @@ export default (file: FileInfo, api: API, options: Options) => {
     return null
   }
 
-  const transformationSuccess: Boolean = runTransformation(root)
+  runTransformation(root)
+  removeReactComponentImport(root)
 
-  if (transformationSuccess) return root.toSource()
-
-  skipTransformation(root, "Transformation Failed")
-  return null
+  return root.toSource()
 }
 
-// TODO: refactor return to return object of success / failure w/ message for failure
-const runTransformation = (path: Collection<ASTNode>) => {
-  return false
-}
+const runTransformation = (path: Collection<ASTNode>) =>
+  findReactES6ClassDeclaration(path)
+    .filter(p => hasOnlyRenderMethod(p))
+    .replaceWith(p => {
+      const name = getClassName(p)
+
+      const renderMethod = p.value.body.body.filter(isRenderMethod)[0]
+      // @ts-ignore
+      const renderBody = renderMethod.value.body // TODO: figure out why we are getting type mismatch for renderBody
+      const renderReturn = renderBody.body[0].argument
+
+      // TODO: Add ability to make implicit returns on JSX
+      return variableDeclaration("const", [
+        variableDeclarator(
+          identifier(name),
+          arrowFunctionExpression(
+            [],
+            blockStatement([returnStatement(renderReturn)])
+          )
+        )
+      ])
+    })
+
+const removeReactComponentImport = (path: Collection<ASTNode>) =>
+  findModule(path, "react").replaceWith((p: NodePath<ImportDeclaration>) => {
+    const imports = p.value.specifiers
+
+    if (imports.length > 1) {
+      return importDeclaration(
+        [importDefaultSpecifier(identifier("React"))],
+        literal("react")
+      )
+    }
+
+    return null
+  })

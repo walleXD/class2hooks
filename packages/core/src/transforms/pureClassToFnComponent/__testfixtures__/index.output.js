@@ -1,9 +1,11 @@
-import React from "react"
+import React from "react";
 
-const SimpleComponents = () => (
-  <div>
-    <h1>Hello World</h1>
-  </div>
-)
+const SimpleComponents = () => {
+  return (
+    <div>
+      <h1>Hello World</h1>
+    </div>
+  );
+};
 
 export default SimpleComponents

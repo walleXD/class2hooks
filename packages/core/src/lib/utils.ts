@@ -1,23 +1,21 @@
-import {
+import j, {
   ImportDeclaration,
   ASTNode,
   ImportSpecifier,
   ClassDeclaration,
-  ClassBody,
-  MethodDefinition,
-  Program,
-  Identifier,
-  API
+  MethodDefinition
 } from "jscodeshift"
+import { NodePath } from "ast-types"
 import { Collection } from "jscodeshift/src/Collection"
 import { runInlineTest } from "jscodeshift/src/testUtils"
 import { join } from "path"
 import { readFileSync } from "fs"
 import { RuntimeOptions } from "./types"
 
-// ---------------------------------------------------------------------------
-// Checks if the file imports a certain module
-const hasModule = (path: Collection<ASTNode>, module: String) =>
+const findModule = (
+  path: Collection<ASTNode>,
+  module: String
+): Collection<ImportDeclaration> =>
   path
     .find(ImportDeclaration, {
       type: "ImportDeclaration",
@@ -26,7 +24,11 @@ const hasModule = (path: Collection<ASTNode>, module: String) =>
       }
     })
     .filter(declarator => declarator.value.source.value === module)
-    .size() === 1
+
+// ---------------------------------------------------------------------------
+// Checks if the file imports a certain module
+const hasModule = (path: Collection<ASTNode>, module: String) =>
+  findModule(path, module).size() === 1
 
 // ---------------------------------------------------------------------------
 // Checks if the file imports a React module
@@ -34,6 +36,12 @@ const hasReact = (path: Collection<ASTNode>) =>
   hasModule(path, "React") ||
   hasModule(path, "react") ||
   hasModule(path, "react-native")
+
+const hasOnlyRenderMethod = (path: NodePath) =>
+  j(path)
+    .find(MethodDefinition)
+    .filter(p => !isRenderMethod(p.value))
+    .size() === 0
 
 // ---------------------------------------------------------------------------
 // Finds alias for React.Component if used as named import.
@@ -130,11 +138,11 @@ const hasJSX = (path: Collection<ASTNode>): Boolean => findJSX(path).size() > 0
 // ClassBody -> MethodDefinition -> Value -> Key -> KeyName : [fnName]. If [fnName] === untransformable, then we add it to our modified path collection.
 const findComponentDidCatchMethod = (
   path: Collection<ASTNode>
-): Collection<ASTNode> => {
-  return path
+): Collection<ASTNode> =>
+  path
     .find(MethodDefinition)
     .filter(element => element.value.key["name"] === "componentDidCatch")
-}
+
 // ---------------------------------------------------------------------------
 // Checks if the file has findComponentDidCatch Method. If our path has 1 or more componentDidCatchMethods, return true
 const hasComponentDidCatchMethod = (path: Collection<ASTNode>): Boolean =>
@@ -145,11 +153,10 @@ const hasComponentDidCatchMethod = (path: Collection<ASTNode>): Boolean =>
 // ClassBody -> MethodDefinition -> Value -> Key -> KeyName : [fnName]. If [fnName] === untransformable, then we add it to our modified path collection.
 const findGetDerivedStateFromErrorMethod = (
   path: Collection<ASTNode>
-): Collection<ASTNode> => {
-  return path
+): Collection<ASTNode> =>
+  path
     .find(MethodDefinition)
     .filter(element => element.value.key["name"] === "getDerivedStateFromError")
-}
 
 // ---------------------------------------------------------------------------
 // Checks if the file has findGetDerivedStateFromError Method. If our path has 1 or more 'getDerivedStateFromError's, return true
@@ -157,13 +164,27 @@ const hasGetDerivedStateFromErrorMethod = (
   path: Collection<ASTNode>
 ): Boolean => findGetDerivedStateFromErrorMethod(path).size() > 0
 
+// ---------------------------------------------------------------------------
+// Get the name of a Class
+const getClassName = (
+  path: NodePath<ClassDeclaration, ClassDeclaration>
+): string => path.node.id.name
+
+// ---------------------------------------------------------------------------
+// Checks if a node is a render method
+const isRenderMethod = (node: ASTNode) =>
+  node.type == "MethodDefinition" &&
+  node.key.type == "Identifier" &&
+  node.key.name == "render"
+
+// ---------------------------------------------------------------------------
+// Bails out of transformation & prints message to console
 const skipTransformation = (path: Collection<ASTNode>, msg: string) =>
   // TODO: Add better error reporting
-
   console.warn(msg)
 
 // ---------------------------------------------------------------------------
-// returns jest bootstapping fn to run fixtures
+// Jest bootstapping fn to run fixtures
 const runTest = (
   dirName: string,
   transformName: string,
@@ -193,6 +214,7 @@ const runTest = (
     transformName,
     "index.ts"
   ))
+
   runInlineTest(
     module,
     options,
@@ -224,15 +246,19 @@ export {
   hasModule,
   hasReact,
   hasReactES6Class,
+  hasJSX,
+  hasComponentDidCatchMethod,
+  hasGetDerivedStateFromErrorMethod,
+  hasOnlyRenderMethod,
   findReactComponentNameByParent,
   findReactES6ClassDeclaration,
   findReactES6ClassDeclarationByParent,
   findJSX,
-  hasJSX,
   findComponentDidCatchMethod,
-  hasComponentDidCatchMethod,
   findGetDerivedStateFromErrorMethod,
-  hasGetDerivedStateFromErrorMethod,
+  findModule,
+  getClassName,
+  isRenderMethod,
   skipTransformation,
   defineTest
 }
