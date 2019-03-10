@@ -3,11 +3,11 @@ import { Collection } from "jscodeshift/src/Collection"
 
 import { RuntimeOptions } from "./types"
 import {
-  hasReact,
-  hasReactES6Class,
-  hasJSX,
   hasComponentDidCatchMethod,
-  hasGetDerivedStateFromErrorMethod
+  hasGetDerivedStateFromErrorMethod,
+  hasJSX,
+  hasReact,
+  hasReactES6Class
 } from "./utils"
 
 /**
@@ -18,7 +18,7 @@ import {
 const runChecks = (
   root: Collection<ASTNode>,
   options?: RuntimeOptions
-): Boolean =>
+): boolean =>
   hasReact(root) &&
   hasReactES6Class(root) &&
   hasJSX(root) &&

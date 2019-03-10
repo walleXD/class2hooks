@@ -1,32 +1,32 @@
 import {
   API,
-  FileInfo,
-  Options,
-  ASTNode,
-  variableDeclaration,
-  identifier,
-  variableDeclarator,
   arrowFunctionExpression,
+  ASTNode,
   blockStatement,
-  returnStatement,
-  ImportDeclaration,
+  FileInfo,
+  identifier,
   importDeclaration,
+  ImportDeclaration,
   importDefaultSpecifier,
-  literal
+  literal,
+  Options,
+  returnStatement,
+  variableDeclaration,
+  variableDeclarator
 } from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
 
-import { RuntimeOptions } from "lib/types"
+import { NodePath } from "ast-types"
 import runChecks from "lib/runChecks"
+import { RuntimeOptions } from "lib/types"
 import {
-  skipTransformation,
+  findModule,
   findReactES6ClassDeclaration,
-  isRenderMethod,
   getClassName,
   hasOnlyRenderMethod,
-  findModule
+  isRenderMethod,
+  skipTransformation
 } from "lib/utils"
-import { NodePath } from "ast-types"
 
 /**
  * Pure Class To Functional Component
@@ -47,7 +47,7 @@ export default (file: FileInfo, api: API, options: Options) => {
 
   const runtimeOptions: RuntimeOptions = { ...defaultOptions, ...options }
 
-  const isTransformable: Boolean = runChecks(root, runtimeOptions)
+  const isTransformable: boolean = runChecks(root, runtimeOptions)
 
   if (!isTransformable) {
     skipTransformation(root, "Failed initial Check")

@@ -1,3 +1,9 @@
 {
-  "extends": ["tslint:latest", "tslint:react", "tslint-config-prettier"]
+  "extends": ["tslint:latest", "tslint:recommended", "tslint-config-prettier"],
+  "rules": {
+    // override tslint-react rules here
+    "no-submodule-imports": false,
+    "no-implicit-dependencies": false,
+    "no-console": false
+  }
 }
