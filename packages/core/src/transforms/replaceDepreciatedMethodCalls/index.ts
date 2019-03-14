@@ -1,11 +1,3 @@
-import { NodePath } from "ast-types"
-import {
-  API,
-  ASTNode,
-  FileInfo,
-  Options
-} from "jscodeshift"
-import { Collection } from "jscodeshift/src/Collection"
 import runChecks from "lib/runChecks"
 import { RuntimeOptions } from "lib/types"
 import { removeReactComponentImport, skipTransformation } from "lib/utils"
@@ -22,7 +14,7 @@ import { removeReactComponentImport, skipTransformation } from "lib/utils"
 
 
 //deprecated.js
-export default (fileInfo, api, options: Options) => {
+export default (fileInfo, api, options) => {
 
   const j = api.jscodeshift;
   const root = j(fileInfo.source);
