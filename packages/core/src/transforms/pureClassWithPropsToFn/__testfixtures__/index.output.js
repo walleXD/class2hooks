@@ -17,4 +17,4 @@ const ClassWithState = () => {
     )
 }
 
-export default PureWithProps
+export default ClassWithState
