@@ -20,11 +20,11 @@ import { NodePath } from "ast-types"
 import runChecks from "lib/runChecks"
 import { RuntimeOptions } from "lib/types"
 import {
-  findModule,
   findReactES6ClassDeclaration,
   getClassName,
   hasOnlyRenderMethod,
   isRenderMethod,
+  removeReactComponentImport,
   skipTransformation
 } from "lib/utils"
 
@@ -82,17 +82,3 @@ const runTransformation = (path: Collection<ASTNode>) =>
         )
       ])
     })
-
-const removeReactComponentImport = (path: Collection<ASTNode>) =>
-  findModule(path, "react").replaceWith((p: NodePath<ImportDeclaration>) => {
-    const imports = p.value.specifiers
-
-    if (imports.length > 1) {
-      return importDeclaration(
-        [importDefaultSpecifier(identifier("React"))],
-        literal("react")
-      )
-    }
-
-    return null
-  })

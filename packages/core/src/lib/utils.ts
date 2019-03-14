@@ -3,8 +3,12 @@ import { readFileSync } from "fs"
 import j, {
   ASTNode,
   ClassDeclaration,
+  identifier,
   ImportDeclaration,
+  importDeclaration,
+  importDefaultSpecifier,
   ImportSpecifier,
+  literal,
   MethodDefinition
 } from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
@@ -184,6 +188,22 @@ const skipTransformation = (path: Collection<ASTNode>, msg: string) =>
   console.warn(msg)
 
 // ---------------------------------------------------------------------------
+// Remove React class component imports
+const removeReactComponentImport = (path: Collection<ASTNode>) =>
+findModule(path, "react").replaceWith((p: NodePath<ImportDeclaration>) => {
+  const imports = p.value.specifiers
+
+  if (imports.length > 1) {
+    return importDeclaration(
+      [importDefaultSpecifier(identifier("React"))],
+      literal("react")
+    )
+  }
+
+  return null
+})
+
+// ---------------------------------------------------------------------------
 // Jest bootstapping fn to run fixtures
 const runTest = (
   dirName: string,
@@ -259,6 +279,7 @@ export {
   findModule,
   getClassName,
   isRenderMethod,
+  removeReactComponentImport,
   skipTransformation,
   defineTest
 }
