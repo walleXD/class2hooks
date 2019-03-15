@@ -1,5 +1,5 @@
-import { defineTest } from "lib/utils"
 import { readdirSync, statSync } from "fs"
+import { defineTest } from "lib/testRunners"
 import { join } from "path"
 
 const dirs = (p: string) =>

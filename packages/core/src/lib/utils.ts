@@ -1,5 +1,4 @@
 import { NodePath } from "ast-types"
-import { readFileSync } from "fs"
 import j, {
   ASTNode,
   ClassDeclaration,
@@ -12,14 +11,11 @@ import j, {
   MethodDefinition
 } from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
-import { runInlineTest } from "jscodeshift/src/testUtils"
-import { join } from "path"
-import { RuntimeOptions } from "./types"
 
 const findModule = (
   path: Collection<ASTNode>,
   module: string
-): Collection<ImportDeclaration> =>
+): Collection<ImportDeclaration> | Collection<any> =>
   path
     .find(ImportDeclaration, {
       source: {
@@ -281,5 +277,4 @@ export {
   isRenderMethod,
   removeReactComponentImport,
   skipTransformation,
-  defineTest
 }

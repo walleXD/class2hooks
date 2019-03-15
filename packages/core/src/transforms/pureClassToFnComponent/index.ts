@@ -61,8 +61,8 @@ export default (file: FileInfo, api: API, options: Options) => {
 }
 
 const runTransformation = (path: Collection<ASTNode>) =>
-  findReactES6ClassDeclaration(path)
-    .filter(p => hasOnlyRenderMethod(p))
+  findReactES6ClassDeclaration(path) // collection of classes
+    .filter(p => hasOnlyRenderMethod(p)) // makes sure the classes only have render methods
     .replaceWith(p => {
       const name = getClassName(p)
 
@@ -80,5 +80,20 @@ const runTransformation = (path: Collection<ASTNode>) =>
             blockStatement([returnStatement(renderReturn)])
           )
         )
-      ])
+      ]) // replaces class with an arrow function with same name
     })
+
+const removeReactComponentImport = (path: Collection<ASTNode>) =>
+  findModule(path, "react").replaceWith((p: NodePath<ImportDeclaration>) => {
+    const imports = p.value.specifiers
+
+    // TODO: Reimplement to only remove Component & PureComponent imports
+    if (imports.length > 1) {
+      return importDeclaration(
+        [importDefaultSpecifier(identifier("React"))],
+        literal("react")
+      )
+    } // only replaces react import if there are additional react import specifiers
+
+    return null
+  })
