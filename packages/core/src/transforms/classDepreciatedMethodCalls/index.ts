@@ -11,9 +11,6 @@ import { removeReactComponentImport, skipTransformation } from "lib/utils"
  * - If the the initial check passes, then check for where/what we can refactor
  * - Then run transformations based on the refactorable collections
  */
-
-
-//deprecated.js
 export default (fileInfo, api, options) => {
 
   const j = api.jscodeshift;
@@ -27,10 +24,10 @@ export default (fileInfo, api, options) => {
   const isTransformable: boolean = runChecks(root, runtimeOptions)
 
 // the example file fails this...
- /* if (!isTransformable) {
+  if (!isTransformable) {
     skipTransformation(root, "Failed initial Check")
     return null
-  }*/
+  }
 
   removeReactComponentImport(root)
 
@@ -57,6 +54,7 @@ export default (fileInfo, api, options) => {
     // change to our new prop
     node.property.name = 'getCircleArea';
     // replaceWith should return a Node, not a NodePath
-    return node;}).toSource(); };
+    return node;}).toSource();
+};
 
 
