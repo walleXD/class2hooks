@@ -1,12 +1,12 @@
 import { readFileSync } from "fs";
 import { runInlineTest } from "jscodeshift/src/testUtils"
 import { join } from "path";
-import { RuntimeOptions } from "./types";
+import { IRuntimeOptions } from "./types";
 
 const defineTest = (
   dirName: string,
   transformName: string,
-  options?: RuntimeOptions,
+  options?: IRuntimeOptions,
   testFilePrefix?: string
 ) => {
   const testName = testFilePrefix
@@ -22,7 +22,7 @@ const defineTest = (
 const runTest = (
   dirName: string,
   transformName: string,
-  options?: RuntimeOptions,
+  options?: IRuntimeOptions,
   testFilePrefix?: string
 ) => {
   if (!testFilePrefix) {
@@ -32,8 +32,8 @@ const runTest = (
   const fixtureDir: string = join(
     dirName,
     "..",
+    "__testfixtures__",
     transformName,
-    "__testfixtures__"
   )
   const inputPath: string = join(fixtureDir, "index.input.js")
   const source: string = readFileSync(inputPath, "utf8")
@@ -45,7 +45,6 @@ const runTest = (
   const module: NodeModule = require(join(
     dirName,
     "..",
-    transformName,
     "index.ts"
   ))
 
