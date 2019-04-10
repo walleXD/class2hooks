@@ -1,21 +1,24 @@
 import { NodePath } from "ast-types"
-import { readFileSync } from "fs"
+import { readFileSync } from "fs";
 import j, {
   ASTNode,
   ClassDeclaration,
+  identifier,
   ImportDeclaration,
+  importDeclaration,
+  importDefaultSpecifier,
   ImportSpecifier,
+  literal,
   MethodDefinition
 } from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
-import { runInlineTest } from "jscodeshift/src/testUtils"
 import { join } from "path"
 import { RuntimeOptions } from "./types"
 
 const findModule = (
   path: Collection<ASTNode>,
   module: string
-): Collection<ImportDeclaration> =>
+): Collection<ImportDeclaration> | Collection<any> =>
   path
     .find(ImportDeclaration, {
       source: {
@@ -184,63 +187,20 @@ const skipTransformation = (path: Collection<ASTNode>, msg: string) =>
   console.warn(msg)
 
 // ---------------------------------------------------------------------------
-// Jest bootstapping fn to run fixtures
-const runTest = (
-  dirName: string,
-  transformName: string,
-  options?: RuntimeOptions,
-  testFilePrefix?: string
-) => {
-  if (!testFilePrefix) {
-    testFilePrefix = transformName
+// Remove React class component imports
+const removeReactComponentImport = (path: Collection<ASTNode>) =>
+findModule(path, "react").replaceWith((p: NodePath<ImportDeclaration>) => {
+  const imports = p.value.specifiers
+
+  if (imports.length > 1) {
+    return importDeclaration(
+      [importDefaultSpecifier(identifier("React"))],
+      literal("react")
+    )
   }
 
-  const fixtureDir: string = join(
-    dirName,
-    "..",
-    transformName,
-    "__testfixtures__"
-  )
-  const inputPath: string = join(fixtureDir, "index.input.js")
-  const source: string = readFileSync(inputPath, "utf8")
-  const expectedOutput: string = readFileSync(
-    join(fixtureDir, "index.output.js"),
-    "utf8"
-  )
-  // Assumes transform is one level up from __tests__ directory
-  const module: NodeModule = require(join(
-    dirName,
-    "..",
-    transformName,
-    "index.ts"
-  ))
-
-  runInlineTest(
-    module,
-    options,
-    {
-      path: inputPath,
-      source
-    },
-    expectedOutput
-  )
-}
-
-const defineTest = (
-  dirName: string,
-  transformName: string,
-  options?: RuntimeOptions,
-  testFilePrefix?: string
-) => {
-  const testName = testFilePrefix
-    ? `transforms correctly using "${testFilePrefix}" data`
-    : "transforms correctly"
-  describe(transformName, () => {
-    it(testName, () => {
-      runTest(dirName, transformName, options, testFilePrefix)
-    })
-  })
-}
+  return null
+})
 
 export {
   hasModule,
@@ -259,6 +219,6 @@ export {
   findModule,
   getClassName,
   isRenderMethod,
+  removeReactComponentImport,
   skipTransformation,
-  defineTest
 }

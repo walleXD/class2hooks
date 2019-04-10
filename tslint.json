@@ -5,5 +5,8 @@
     "no-submodule-imports": false,
     "no-implicit-dependencies": false,
     "no-console": false
+  },
+  "linterOptions": {
+    "exclude": ["**/node_modules/**"]
   }
 }
