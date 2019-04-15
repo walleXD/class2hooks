@@ -13,7 +13,7 @@ import j, {
 } from "jscodeshift"
 import { Collection } from "jscodeshift/src/Collection"
 import { join } from "path"
-import { RuntimeOptions } from "./types"
+import { IRuntimeOptions } from "./types"
 
 const findModule = (
   path: Collection<ASTNode>,

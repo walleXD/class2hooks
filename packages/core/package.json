@@ -15,7 +15,7 @@
   },
   "scripts": {
     "test": "jest",
-    "dev": "yarn test --watch"
+    "dev": "yarn test --watchAll"
   },
   "dependencies": {
     "ast-types": "^0.12.2",
