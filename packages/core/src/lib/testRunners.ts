@@ -48,6 +48,9 @@ const runTest = (
   )
 }
 
+const simpleTest = (transformName: string): void =>
+  runTest(__dirname, transformName)
+
 const defineTest = (
   dirName: string,
   transformName: string,
@@ -75,4 +78,4 @@ const defineTest = (
   )
 }
 
-export { defineTest, runTest }
+export { defineTest, runTest, simpleTest }

@@ -5,6 +5,7 @@
       "type": "node",
       "request": "launch",
       "name": "Core Jest All",
+      "cwd": "${workspaceFolder:core}",
       "program": "${workspaceFolder:core}/node_modules/.bin/jest",
       "args": [
         "--config",
@@ -32,7 +33,7 @@
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true,
       "windows": {
-        "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+        "program": "${workspaceFolder:core}/node_modules/jest/bin/jest"
       }
     }
   ]

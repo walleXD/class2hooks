@@ -1,11 +1,7 @@
-import { runTest } from 'lib/testRunners'
+import { simpleTest } from 'lib/testRunners'
 
 describe('transforms correctly', (): void => {
-  it('pure', (): void => {
-    runTest(__dirname, 'pure')
-  })
+  it('pure', (): void => simpleTest('pure'))
 
-  it('withState', (): void => {
-    runTest(__dirname, 'withState')
-  })
+  it('withState', (): void => simpleTest('withState'))
 })

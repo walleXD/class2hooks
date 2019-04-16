@@ -34,6 +34,9 @@
       "refactorable",
       "testfixtures"
     ],
-    "jest.rootPath": "packages/core"
+    "jest.rootPath": "packages/core",
+    "jest.autoEnable": true,
+    "jest.runAllTestsFirst": true,
+    "jest.enableCodeLens": false
   }
 }
