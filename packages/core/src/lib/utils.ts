@@ -220,6 +220,5 @@ export {
   findModule,
   getClassName,
   isRenderMethod,
-  removeReactComponentImport,
   skipTransformation
 }
