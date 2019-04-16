@@ -23,14 +23,18 @@ import {
   skipTransformation
 } from './lib/utils'
 
-const runTransformation = (path: Collection<ASTNode>): Collection<VariableDeclaration> =>
+const runTransformation = (
+  path: Collection<ASTNode>
+): Collection<VariableDeclaration> =>
   findReactES6ClassDeclaration(path) // collection of classes
     .filter((p): boolean => hasOnlyRenderMethod(p)) // makes sure the classes only have render methods
     .replaceWith(
       (p): VariableDeclaration => {
         const name = getClassName(p)
 
-        const renderMethod = p.value.body.body.filter(isRenderMethod)[0]
+        const renderMethod = p.value.body.body.filter(
+          isRenderMethod
+        )[0]
         // @ts-ignore
         const renderBody = renderMethod.value.body // TODO: figure out why we are getting type mismatch for renderBody
         const renderReturn = renderBody.body[0].argument
@@ -39,7 +43,12 @@ const runTransformation = (path: Collection<ASTNode>): Collection<VariableDeclar
         return variableDeclaration('const', [
           variableDeclarator(
             identifier(name),
-            arrowFunctionExpression([], blockStatement([returnStatement(renderReturn)]))
+            arrowFunctionExpression(
+              [],
+              blockStatement([
+                returnStatement(renderReturn)
+              ])
+            )
           )
         ]) // replaces class with an arrow function with same name
       }
@@ -54,7 +63,11 @@ const runTransformation = (path: Collection<ASTNode>): Collection<VariableDeclar
  * - If the the initial check passes, then check for where/what we can refactor
  * - Then run transformations based on the refactorable collections
  */
-export default (file: FileInfo, api: API, options: Options): string | null => {
+export default (
+  file: FileInfo,
+  api: API,
+  options: Options
+): string | null => {
   const j = api.jscodeshift
   const root: Collection<ASTNode> = j(file.source)
 
@@ -62,9 +75,15 @@ export default (file: FileInfo, api: API, options: Options): string | null => {
     refactorState: false
   }
 
-  const runtimeOptions: IRuntimeOptions = { ...defaultOptions, ...options }
+  const runtimeOptions: IRuntimeOptions = {
+    ...defaultOptions,
+    ...options
+  }
 
-  const isTransformable: boolean = runChecks(root, runtimeOptions)
+  const isTransformable: boolean = runChecks(
+    root,
+    runtimeOptions
+  )
 
   if (!isTransformable) {
     skipTransformation(root, 'Failed initial Check')
