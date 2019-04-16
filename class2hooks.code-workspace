@@ -28,6 +28,11 @@
     },
     "[typescriptreact]": {
       "editor.formatOnSave": false
-    }
+    },
+    "cSpell.ignoreWords": [
+      "jscodeshift",
+      "refactorable",
+      "testfixtures"
+    ]
   }
 }
