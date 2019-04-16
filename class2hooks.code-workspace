@@ -33,6 +33,7 @@
       "jscodeshift",
       "refactorable",
       "testfixtures"
-    ]
+    ],
+    "jest.rootPath": "packages/core"
   }
 }
