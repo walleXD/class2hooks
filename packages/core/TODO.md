@@ -1,3 +1,3 @@
 # TODO
 
-- [ ] Add eslint for linting instead of tslint
+- [x] Add eslint for linting instead of tslint
