@@ -10,7 +10,7 @@ import { IRuntimeOptions } from './lib/types'
 import { skipTransformation } from './lib/utils'
 
 import runTransformation from './transformations/pure'
-import removeReactComponentImport from './transformations/removeReactImport'
+import removeReactComponentImport from './transformations/removeComponentImport'
 
 /**
  * Pure Class To Functional Component
