@@ -10,10 +10,10 @@ import {
   variableDeclaration,
   variableDeclarator,
   VariableDeclaration
-} from "jscodeshift"
-import { Collection } from "jscodeshift/src/Collection"
-import runChecks from "lib/runChecks"
-import { IRuntimeOptions } from "./lib/types"
+} from 'jscodeshift'
+import { Collection } from 'jscodeshift/src/Collection'
+import runChecks from 'lib/runChecks'
+import { IRuntimeOptions } from './lib/types'
 import {
   findReactES6ClassDeclaration,
   getClassName,
@@ -21,11 +21,9 @@ import {
   isRenderMethod,
   removeReactComponentImport,
   skipTransformation
-} from "./lib/utils"
+} from './lib/utils'
 
-const runTransformation = (
-  path: Collection<ASTNode>
-): Collection<VariableDeclaration> =>
+const runTransformation = (path: Collection<ASTNode>): Collection<VariableDeclaration> =>
   findReactES6ClassDeclaration(path) // collection of classes
     .filter((p): boolean => hasOnlyRenderMethod(p)) // makes sure the classes only have render methods
     .replaceWith(
@@ -38,13 +36,10 @@ const runTransformation = (
         const renderReturn = renderBody.body[0].argument
 
         // TODO: Add ability to make implicit returns on JSX
-        return variableDeclaration("const", [
+        return variableDeclaration('const', [
           variableDeclarator(
             identifier(name),
-            arrowFunctionExpression(
-              [],
-              blockStatement([returnStatement(renderReturn)])
-            )
+            arrowFunctionExpression([], blockStatement([returnStatement(renderReturn)]))
           )
         ]) // replaces class with an arrow function with same name
       }
@@ -72,7 +67,7 @@ export default (file: FileInfo, api: API, options: Options): string | null => {
   const isTransformable: boolean = runChecks(root, runtimeOptions)
 
   if (!isTransformable) {
-    skipTransformation(root, "Failed initial Check")
+    skipTransformation(root, 'Failed initial Check')
     return null
   }
 
