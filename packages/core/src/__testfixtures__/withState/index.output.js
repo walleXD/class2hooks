@@ -1,20 +1,24 @@
-import React, { useState } from "react";
+import React, { Component } from "react";
 
-const ClassWithState = () => {
+class ClassWithState extends Component {
 
-    const [num, updateNum] = useState(0)
-    
-    const testMethod = (input = 1) => {
-        updateNum(num += input)
+    constructor(props) {
+        super(props);
+        this.state = { num: 0};
+    }
+    testMethod(input = 1) {
+        this.setState({ num: this.state += input })
     }
     
-    return (
-        <div>
-            <h1>{num}</h1>
-            <button onClick={testMethod}>Test Button 1</button>
-            <button onClick={() => testMethod(2)}>Test Button 2</button>
-        </div>
-    )
+    render() {
+        return (
+            <div>
+                <h1>{this.state.num}</h1>
+                <button onClick={this.testMethod}>Test Button 1</button>
+                <button onClick={() => this.testMethod(2)}>Test Button 2</button>
+            </div>
+        )
+    }
 }
 
 export default ClassWithState
