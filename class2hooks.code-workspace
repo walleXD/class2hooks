@@ -32,7 +32,8 @@
     "cSpell.ignoreWords": [
       "jscodeshift",
       "refactorable",
-      "testfixtures"
+      "testfixtures",
+      "untransformable"
     ],
     "jest.rootPath": "packages/core",
     "jest.autoEnable": true,
