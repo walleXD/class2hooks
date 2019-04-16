@@ -1,58 +1,16 @@
 import {
   API,
-  arrowFunctionExpression,
   ASTNode,
-  blockStatement,
   FileInfo,
-  identifier,
-  Options,
-  returnStatement,
-  variableDeclaration,
-  variableDeclarator,
-  VariableDeclaration
+  Options
 } from 'jscodeshift'
 import { Collection } from 'jscodeshift/src/Collection'
 import runChecks from 'lib/runChecks'
 import { IRuntimeOptions } from './lib/types'
-import {
-  findReactES6ClassDeclaration,
-  getClassName,
-  hasOnlyRenderMethod,
-  isRenderMethod,
-  removeReactComponentImport,
-  skipTransformation
-} from './lib/utils'
+import { skipTransformation } from './lib/utils'
 
-const runTransformation = (
-  path: Collection<ASTNode>
-): Collection<VariableDeclaration> =>
-  findReactES6ClassDeclaration(path) // collection of classes
-    .filter((p): boolean => hasOnlyRenderMethod(p)) // makes sure the classes only have render methods
-    .replaceWith(
-      (p): VariableDeclaration => {
-        const name = getClassName(p)
-
-        const renderMethod = p.value.body.body.filter(
-          isRenderMethod
-        )[0]
-        // @ts-ignore
-        const renderBody = renderMethod.value.body // TODO: figure out why we are getting type mismatch for renderBody
-        const renderReturn = renderBody.body[0].argument
-
-        // TODO: Add ability to make implicit returns on JSX
-        return variableDeclaration('const', [
-          variableDeclarator(
-            identifier(name),
-            arrowFunctionExpression(
-              [],
-              blockStatement([
-                returnStatement(renderReturn)
-              ])
-            )
-          )
-        ]) // replaces class with an arrow function with same name
-      }
-    )
+import runTransformation from './transformations/pure'
+import removeReactComponentImport from './transformations/removeReactImport'
 
 /**
  * Pure Class To Functional Component

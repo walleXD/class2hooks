@@ -1,49 +1,54 @@
-import { NodePath } from "ast-types"
-import { readFileSync } from "fs";
+import { NodePath } from 'ast-types'
 import j, {
   ASTNode,
   ClassDeclaration,
-  identifier,
   ImportDeclaration,
-  importDeclaration,
-  importDefaultSpecifier,
   ImportSpecifier,
-  literal,
   MethodDefinition
-} from "jscodeshift"
-import { Collection } from "jscodeshift/src/Collection"
-import { join } from "path"
-import { IRuntimeOptions } from "./types"
+} from 'jscodeshift'
+import { Collection } from 'jscodeshift/src/Collection'
 
 const findModule = (
   path: Collection<ASTNode>,
   module: string
-): Collection<ImportDeclaration> | Collection<any> =>
+): Collection<ImportDeclaration> | Collection<void> =>
   path
     .find(ImportDeclaration, {
       source: {
-        type: "Literal"
+        type: 'Literal'
       },
-      type: "ImportDeclaration"
+      type: 'ImportDeclaration'
     })
-    .filter(declarator => declarator.value.source.value === module)
+    .filter(
+      (declarator): boolean =>
+        declarator.value.source.value === module
+    )
 
 // ---------------------------------------------------------------------------
 // Checks if the file imports a certain module
-const hasModule = (path: Collection<ASTNode>, module: string) =>
-  findModule(path, module).size() === 1
+const hasModule = (
+  path: Collection<ASTNode>,
+  module: string
+): boolean => findModule(path, module).size() === 1
+
+// ---------------------------------------------------------------------------
+// Checks if a node is a render method
+const isRenderMethod = (node: ASTNode): boolean =>
+  node.type === 'MethodDefinition' &&
+  node.key.type === 'Identifier' &&
+  node.key.name === 'render'
 
 // ---------------------------------------------------------------------------
 // Checks if the file imports a React module
-const hasReact = (path: Collection<ASTNode>) =>
-  hasModule(path, "React") ||
-  hasModule(path, "react") ||
-  hasModule(path, "react-native")
+const hasReact = (path: Collection<ASTNode>): boolean =>
+  hasModule(path, 'React') ||
+  hasModule(path, 'react') ||
+  hasModule(path, 'react-native')
 
-const hasOnlyRenderMethod = (path: NodePath) =>
+const hasOnlyRenderMethod = (path: NodePath): boolean =>
   j(path)
     .find(MethodDefinition)
-    .filter(p => !isRenderMethod(p.value))
+    .filter((p): boolean => !isRenderMethod(p.value))
     .size() === 0
 
 // ---------------------------------------------------------------------------
@@ -55,50 +60,55 @@ const findReactComponentNameByParent = (
   const reactImportDeclaration = path
     .find(ImportDeclaration, {
       source: {
-        type: "Literal"
+        type: 'Literal'
       },
-      type: "ImportDeclaration"
+      type: 'ImportDeclaration'
     })
-    .filter(() => hasReact(path))
+    .filter((): boolean => hasReact(path))
 
   const componentImportSpecifier = reactImportDeclaration
     .find(ImportSpecifier, {
       imported: {
         name: parentClassName,
-        type: "Identifier"
+        type: 'Identifier'
       },
-      type: "ImportSpecifier"
+      type: 'ImportSpecifier'
     })
     .at(0)
 
   const paths = componentImportSpecifier.paths()
-  return paths.length ? paths[0].value.local.name : undefined
+  return paths.length
+    ? paths[0].value.local.name
+    : undefined
 }
 
 const findReactES6ClassDeclarationByParent = (
   path: Collection<ASTNode>,
   parentClassName: string
 ): Collection<ClassDeclaration> => {
-  const componentImport = findReactComponentNameByParent(path, parentClassName)
+  const componentImport = findReactComponentNameByParent(
+    path,
+    parentClassName
+  )
 
   const selector = componentImport
     ? {
         superClass: {
           name: componentImport,
-          type: "Identifier"
+          type: 'Identifier'
         }
       }
     : {
         superClass: {
           object: {
-            name: "React",
-            type: "Identifier"
+            name: 'React',
+            type: 'Identifier'
           },
           property: {
-            name: "Component",
-            type: "Identifier"
+            name: 'Component',
+            type: 'Identifier'
           },
-          type: "MemberExpression"
+          type: 'MemberExpression'
         }
       }
 
@@ -111,12 +121,12 @@ const findReactES6ClassDeclaration = (
 ): Collection<ClassDeclaration> => {
   let classDeclarations = findReactES6ClassDeclarationByParent(
     path,
-    "Component"
+    'Component'
   )
   if (classDeclarations.size() === 0) {
     classDeclarations = findReactES6ClassDeclarationByParent(
       path,
-      "PureComponent"
+      'PureComponent'
     )
   }
   return classDeclarations
@@ -124,17 +134,20 @@ const findReactES6ClassDeclaration = (
 
 // ---------------------------------------------------------------------------
 // Checks if the file has React ES6 Class Components
-const hasReactES6Class = (path: Collection<ASTNode>): boolean =>
-  findReactES6ClassDeclaration(path).size() > 0
+const hasReactES6Class = (
+  path: Collection<ASTNode>
+): boolean => findReactES6ClassDeclaration(path).size() > 0
 
 // ---------------------------------------------------------------------------
 // Finds JSX in file
-const findJSX = (path: Collection<ASTNode>): Collection<ASTNode> =>
-  path.findJSXElements()
+const findJSX = (
+  path: Collection<ASTNode>
+): Collection<ASTNode> => path.findJSXElements()
 
 // ---------------------------------------------------------------------------
 // Checks if the file has JSX
-const hasJSX = (path: Collection<ASTNode>): boolean => findJSX(path).size() > 0
+const hasJSX = (path: Collection<ASTNode>): boolean =>
+  findJSX(path).size() > 0
 
 // ---------------------------------------------------------------------------
 // Filter our path down to a collection of AST nodes that ONLY contains items in the following form:
@@ -144,12 +157,16 @@ const findComponentDidCatchMethod = (
 ): Collection<ASTNode> =>
   path
     .find(MethodDefinition)
-    .filter((p: NodePath) => p.value.key.name === "componentDidCatch")
+    .filter(
+      (p: NodePath): boolean =>
+        p.value.key.name === 'componentDidCatch'
+    )
 
 // ---------------------------------------------------------------------------
 // Checks if the file has findComponentDidCatch Method. If our path has 1 or more componentDidCatchMethods, return true
-const hasComponentDidCatchMethod = (path: Collection<ASTNode>): boolean =>
-  findComponentDidCatchMethod(path).size() > 0
+const hasComponentDidCatchMethod = (
+  path: Collection<ASTNode>
+): boolean => findComponentDidCatchMethod(path).size() > 0
 
 // ---------------------------------------------------------------------------
 // Filter our path down to a collection of AST nodes that ONLY contains items in the following form:
@@ -159,13 +176,17 @@ const findGetDerivedStateFromErrorMethod = (
 ): Collection<ASTNode> =>
   path
     .find(MethodDefinition)
-    .filter((p: NodePath) => p.value.key.name === "getDerivedStateFromError")
+    .filter(
+      (p: NodePath): boolean =>
+        p.value.key.name === 'getDerivedStateFromError'
+    )
 
 // ---------------------------------------------------------------------------
 // Checks if the file has findGetDerivedStateFromError Method. If our path has 1 or more 'getDerivedStateFromError's, return true
 const hasGetDerivedStateFromErrorMethod = (
   path: Collection<ASTNode>
-): boolean => findGetDerivedStateFromErrorMethod(path).size() > 0
+): boolean =>
+  findGetDerivedStateFromErrorMethod(path).size() > 0
 
 // ---------------------------------------------------------------------------
 // Get the name of a Class
@@ -174,33 +195,13 @@ const getClassName = (
 ): string => path.node.id.name
 
 // ---------------------------------------------------------------------------
-// Checks if a node is a render method
-const isRenderMethod = (node: ASTNode) =>
-  node.type === "MethodDefinition" &&
-  node.key.type === "Identifier" &&
-  node.key.name === "render"
-
-// ---------------------------------------------------------------------------
 // Bails out of transformation & prints message to console
-const skipTransformation = (path: Collection<ASTNode>, msg: string) =>
+const skipTransformation = (
+  path: Collection<ASTNode>,
+  msg: string
+): void =>
   // TODO: Add better error reporting
   console.warn(msg)
-
-// ---------------------------------------------------------------------------
-// Remove React class component imports
-const removeReactComponentImport = (path: Collection<ASTNode>) =>
-findModule(path, "react").replaceWith((p: NodePath<ImportDeclaration>) => {
-  const imports = p.value.specifiers
-
-  if (imports.length > 1) {
-    return importDeclaration(
-      [importDefaultSpecifier(identifier("React"))],
-      literal("react")
-    )
-  }
-
-  return null
-})
 
 export {
   hasModule,
@@ -220,5 +221,5 @@ export {
   getClassName,
   isRenderMethod,
   removeReactComponentImport,
-  skipTransformation,
+  skipTransformation
 }
