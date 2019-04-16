@@ -11,7 +11,7 @@
         "${workspaceRoot:core}/jest.config.js",
         "--runInBand"
       ],
-      "console": "integratedTerminal",
+      // "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true,
       "windows": {
@@ -28,7 +28,7 @@
         "--config",
         "${workspaceRoot:core}/jest.config.js"
       ],
-      "console": "integratedTerminal",
+      // "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true,
       "windows": {
