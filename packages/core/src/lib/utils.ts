@@ -8,6 +8,11 @@ import j, {
 } from 'jscodeshift'
 import { Collection } from 'jscodeshift/src/Collection'
 
+/**
+ * findModule
+ * @param {Collection<ASTNode>} path
+ * @param {string} module
+ */
 const findModule = (
   path: Collection<ASTNode>,
   module: string
@@ -24,35 +29,49 @@ const findModule = (
         declarator.value.source.value === module
     )
 
-// ---------------------------------------------------------------------------
-// Checks if the file imports a certain module
+/**
+ * Checks if the file imports a certain module
+ * @param {Collection<ASTNode>} path
+ * @param {string} module
+ */
 const hasModule = (
   path: Collection<ASTNode>,
   module: string
 ): boolean => findModule(path, module).size() === 1
 
-// ---------------------------------------------------------------------------
-// Checks if a node is a render method
+/**
+ * Checks if a node is a render method
+ * @param {Collection<ASTNode>} node
+ */
 const isRenderMethod = (node: ASTNode): boolean =>
   node.type === 'MethodDefinition' &&
   node.key.type === 'Identifier' &&
   node.key.name === 'render'
 
-// ---------------------------------------------------------------------------
-// Checks if the file imports a React module
+/**
+ * Checks if the file imports a React module
+ * @param {Collection<ASTNode>} path
+ */
 const hasReact = (path: Collection<ASTNode>): boolean =>
   hasModule(path, 'React') ||
   hasModule(path, 'react') ||
   hasModule(path, 'react-native')
 
+/**
+ * Checks to see if class component has only render method
+ * @param {Collection<ASTNode>} path
+ */
 const hasOnlyRenderMethod = (path: NodePath): boolean =>
   j(path)
     .find(MethodDefinition)
     .filter((p): boolean => !isRenderMethod(p.value))
     .size() === 0
 
-// ---------------------------------------------------------------------------
-// Finds alias for React.Component if used as named import.
+/**
+ * Finds alias for React.Component if used as named import.
+ * @param {Collection<ASTNode>} path
+ * @param {string} parentClassName
+ */
 const findReactComponentNameByParent = (
   path: Collection<ASTNode>,
   parentClassName: string
@@ -82,6 +101,11 @@ const findReactComponentNameByParent = (
     : undefined
 }
 
+/**
+ * Finds the class declaration node within a given collection of ASTNode
+ * @param {Collection<ASTNode>} path
+ * @param {string} parentClassName
+ */
 const findReactES6ClassDeclarationByParent = (
   path: Collection<ASTNode>,
   parentClassName: string
@@ -115,7 +139,10 @@ const findReactES6ClassDeclarationByParent = (
   return path.find(ClassDeclaration, selector)
 }
 
-// Finds all classes that extend React.Component
+/**
+ * Finds all classes that extend React.Component
+ * @param {Collection<ASTNode>} path
+ */
 const findReactES6ClassDeclaration = (
   path: Collection<ASTNode>
 ): Collection<ClassDeclaration> => {
@@ -132,26 +159,34 @@ const findReactES6ClassDeclaration = (
   return classDeclarations
 }
 
-// ---------------------------------------------------------------------------
-// Checks if the file has React ES6 Class Components
+/**
+ * Checks if the file has React ES6 Class Components
+ * @param {Collection<ASTNode>} path
+ */
 const hasReactES6Class = (
   path: Collection<ASTNode>
 ): boolean => findReactES6ClassDeclaration(path).size() > 0
 
-// ---------------------------------------------------------------------------
-// Finds JSX in file
+/**
+ * Finds JSX in file
+ * @param {Collection<ASTNode>} path
+ */
 const findJSX = (
   path: Collection<ASTNode>
 ): Collection<ASTNode> => path.findJSXElements()
 
-// ---------------------------------------------------------------------------
-// Checks if the file has JSX
+/**
+ * Checks if the file has JSX
+ * @param {Collection<ASTNode>} path
+ */
 const hasJSX = (path: Collection<ASTNode>): boolean =>
   findJSX(path).size() > 0
 
-// ---------------------------------------------------------------------------
-// Filter our path down to a collection of AST nodes that ONLY contains items in the following form:
-// ClassBody -> MethodDefinition -> Value -> Key -> KeyName : [fnName]. If [fnName] === untransformable, then we add it to our modified path collection.
+/**
+ * Filter our path down to a collection of AST nodes that ONLY contains items in the following form:
+ * ClassBody -> MethodDefinition -> Value -> Key -> KeyName : [fnName]. If [fnName] === untransformable, then we add it to our modified path collection.
+ * @param {Collection<ASTNode>} path
+ */
 const findComponentDidCatchMethod = (
   path: Collection<ASTNode>
 ): Collection<ASTNode> =>
@@ -168,9 +203,11 @@ const hasComponentDidCatchMethod = (
   path: Collection<ASTNode>
 ): boolean => findComponentDidCatchMethod(path).size() > 0
 
-// ---------------------------------------------------------------------------
-// Filter our path down to a collection of AST nodes that ONLY contains items in the following form:
-// ClassBody -> MethodDefinition -> Value -> Key -> KeyName : [fnName]. If [fnName] === untransformable, then we add it to our modified path collection.
+/**
+ * Filter our path down to a collection of AST nodes that ONLY contains items in the following form:
+ * ClassBody -> MethodDefinition -> Value -> Key -> KeyName : [fnName]. If [fnName] === untransformable, then we add it to our modified path collection.
+ * @param {Collection<ASTNode>} path
+ */
 const findGetDerivedStateFromErrorMethod = (
   path: Collection<ASTNode>
 ): Collection<ASTNode> =>
@@ -181,21 +218,29 @@ const findGetDerivedStateFromErrorMethod = (
         p.value.key.name === 'getDerivedStateFromError'
     )
 
-// ---------------------------------------------------------------------------
-// Checks if the file has findGetDerivedStateFromError Method. If our path has 1 or more 'getDerivedStateFromError's, return true
+/**
+ * Checks if the file has findGetDerivedStateFromError Method.
+ * If our path has 'getDerivedStateFromError's, return true
+ * @param {Collection<ASTNode>} path
+ */
 const hasGetDerivedStateFromErrorMethod = (
   path: Collection<ASTNode>
 ): boolean =>
   findGetDerivedStateFromErrorMethod(path).size() > 0
 
-// ---------------------------------------------------------------------------
-// Get the name of a Class
+/**
+ * Get the name of a Class
+ * @param {Collection<ASTNode>} path
+ */
 const getClassName = (
   path: NodePath<ClassDeclaration, ClassDeclaration>
 ): string => path.node.id.name
 
-// ---------------------------------------------------------------------------
-// Bails out of transformation & prints message to console
+/**
+ * Bails out of transformation
+ * @param {Collection<ASTNode>} path - Node with error
+ * @param {string} msg - Error message
+ */
 const skipTransformation = (
   path: Collection<ASTNode>,
   msg: string
