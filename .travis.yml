@@ -1,0 +1,19 @@
+sudo: false
+language: node_js
+node_js:
+  - '10'
+branches:
+  only:
+    - dev
+cache:
+  directories:
+    - node_modules
+before_install:
+  - npm update
+  - npm i -g yarn
+  - npm i -g lerna
+install:
+  - yarn i
+script:
+  - cd packages/core
+  - yarn coveralls

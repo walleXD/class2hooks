@@ -7,6 +7,7 @@
     "@types/jscodeshift": "^0.6.0",
     "@types/lodash": "^4.14.123",
     "@types/node": "^11.13.9",
+    "coveralls": "^3.0.3",
     "jest": "^24.7.1",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.1.0",
@@ -15,7 +16,8 @@
   },
   "scripts": {
     "test": "jest",
-    "dev": "yarn test --watch"
+    "dev": "yarn test --watch",
+    "coveralls": "jest --coverage && cat ./tests/coverage/lcov.info | coveralls"
   },
   "dependencies": {
     "ast-types": "^0.12.4",
