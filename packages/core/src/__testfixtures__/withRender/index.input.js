@@ -7,7 +7,7 @@ class PureClass extends PureComponent {
             <div>
                 <h1>hello</h1>
             </div>
-        )
+        );
     }
 }
 

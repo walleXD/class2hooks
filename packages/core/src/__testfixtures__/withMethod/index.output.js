@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 
+const testMethod = () => {
+    console.log("Hello");
+}
+
 const WithMethod = () => {
-    
-    const testMethod = () => {
-        console.log("Hello");
-    }
-    
     return (
         <div>
             <h1>Hello</h1>
