@@ -3,25 +3,25 @@
   "version": "0.0.1",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^24.0.11",
+    "@types/jest": "^24.0.12",
     "@types/jscodeshift": "^0.6.0",
-    "@types/lodash": "^4.14.121",
-    "@types/node": "^11.9.4",
-    "jest": "^24.3.1",
-    "ts-jest": "^24.0.0",
-    "ts-node": "^8.0.2",
-    "ts-node-dev": "^1.0.0-pre.32",
-    "typescript": "^3.3.3"
+    "@types/lodash": "^4.14.123",
+    "@types/node": "^11.13.9",
+    "jest": "^24.7.1",
+    "ts-jest": "^24.0.2",
+    "ts-node": "^8.1.0",
+    "ts-node-dev": "^1.0.0-pre.33",
+    "typescript": "^3.4.5"
   },
   "scripts": {
     "test": "jest",
     "dev": "yarn test --watch"
   },
   "dependencies": {
-    "ast-types": "^0.12.2",
-    "jscodeshift": "^0.6.3",
+    "ast-types": "^0.12.4",
+    "jscodeshift": "^0.6.4",
     "jscodeshift-helper": "^1.1.0",
     "lodash": "^4.17.11",
-    "recast": "^0.17.3"
+    "recast": "^0.17.6"
   }
 }
