@@ -39,5 +39,29 @@
     "jest.autoEnable": true,
     "jest.runAllTestsFirst": true,
     "jest.enableCodeLens": false
+  },
+  "launch": {
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Run Tests",
+        "cwd": "${workspaceFolder:core}",
+        "program": "${workspaceFolder:core}/node_modules/.bin/jest",
+        "args": [
+          "--watch",
+          "--config",
+          "${workspaceRoot:core}/jest.config.js",
+          "--runInBand"
+        ],
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen",
+        "disableOptimisticBPs": true,
+        "windows": {
+          "program": "${workspaceFolder:core}/node_modules/jest/bin/jest"
+        }
+      }
+    ],
+    "compounds": []
   }
 }
