@@ -8,6 +8,7 @@
 | ------- | -------------------------------------------------------------------------------------------------------------------------- |
 | master  | [![Build Status](https://travis-ci.org/walleXD/class2hooks.svg?branch=master)](https://travis-ci.org/walleXD/class2hooks)  |
 | staging | [![Build Status](https://travis-ci.org/walleXD/class2hooks.svg?branch=staging)](https://travis-ci.org/walleXD/class2hooks) |
+| dev     | [![Build Status](https://travis-ci.org/walleXD/class2hooks.svg?branch=dev)](https://travis-ci.org/walleXD/class2hooks)     |
 
 ### Set up for development
 
