@@ -17,7 +17,7 @@
   "scripts": {
     "test": "jest",
     "dev": "yarn test --watch",
-    "coveralls": "jest --coverage && cat ./tests/coverage/lcov.info | coverage/lcov.info"
+    "coveralls": "jest --coverage && cat ./tests/coverage/lcov.info | coveralls coverage/lcov.info"
   },
   "dependencies": {
     "ast-types": "^0.12.4",
