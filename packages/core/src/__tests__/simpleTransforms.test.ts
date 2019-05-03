@@ -1,18 +1,20 @@
 import { simpleTest } from 'lib/testRunners'
 
 describe('transforms correctly', (): void => {
-  it('pure', (): void => simpleTest('withRender'))
+  it('withRender method', (): void =>
+    simpleTest('withRender'))
 
-  it('withMethod', (): void =>
+  it('withConstructor method', (): void =>
     simpleTest('withConstructor'))
 
-  it('withMethod', (): void => simpleTest('withState'))
+  it('withState', (): void => simpleTest('withState'))
 
-  it('withMethod', (): void => simpleTest('withMethod'))
+  it('with user methods', (): void =>
+    simpleTest('withMethod'))
 
-  it('withMethod', (): void =>
+  it('withComponentDidMount  method', (): void =>
     simpleTest('withComponentDidMount'))
 
-  it('withMethod', (): void =>
+  it('withComponentWillUnmount method', (): void =>
     simpleTest('withComponentWillUnmount'))
 })
