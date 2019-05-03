@@ -7,11 +7,14 @@ import {
 import { Collection } from 'jscodeshift/src/Collection'
 import runChecks from 'lib/runChecks'
 import { IRuntimeOptions } from './lib/types'
-import { skipTransformation } from './lib/utils'
+import {
+  skipTransformation,
+  hasConstructor
+} from './lib/utils'
 
 import runTransformation from './transformations/pure'
 import removeReactComponentImport from './transformations/removeComponentImport'
-
+import constrcutorTransformation from './transformations/constrcutor'
 /**
  * Pure Class To Functional Component
  * =============================
@@ -47,6 +50,8 @@ export default (
     skipTransformation(root, 'Failed initial Check')
     return null
   }
+
+  if (hasConstructor(root)) constrcutorTransformation(root)
 
   runTransformation(root)
   removeReactComponentImport(root)

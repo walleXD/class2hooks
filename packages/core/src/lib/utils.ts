@@ -228,6 +228,34 @@ const hasGetDerivedStateFromErrorMethod = (
 ): boolean =>
   findGetDerivedStateFromErrorMethod(path).size() > 0
 
+const isConstructor = (node: ASTNode): boolean =>
+  node.type === 'MethodDefinition' &&
+  node.key.type === 'Identifier' &&
+  node.key.name === 'constructor'
+
+const findConstructor = (
+  path: Collection<ASTNode>
+): Collection<ASTNode> =>
+  path
+    .find(MethodDefinition)
+    .filter((p): boolean => isConstructor(p.value))
+
+const hasConstructor = (
+  path: Collection<ASTNode>
+): boolean => findConstructor(path).size() === 1
+
+const findAssignmentExpressions = (
+  path: Collection<ASTNode>
+): Collection<ASTNode> => {
+  return path
+}
+
+const findStateInit = (
+  path: Collection<ASTNode>
+): Collection<ASTNode> => {
+  return path
+}
+
 /**
  * Get the name of a Class
  * @param {Collection<ASTNode>} path
@@ -256,6 +284,7 @@ export {
   hasComponentDidCatchMethod,
   hasGetDerivedStateFromErrorMethod,
   hasOnlyRenderMethod,
+  hasConstructor,
   findReactComponentNameByParent,
   findReactES6ClassDeclaration,
   findReactES6ClassDeclarationByParent,
@@ -263,6 +292,7 @@ export {
   findComponentDidCatchMethod,
   findGetDerivedStateFromErrorMethod,
   findModule,
+  findConstructor,
   getClassName,
   isRenderMethod,
   skipTransformation
