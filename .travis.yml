@@ -18,5 +18,4 @@ install:
   - yarn i
 script:
   - cd packages/core
-  - yarn coverage
   - yarn coveralls
