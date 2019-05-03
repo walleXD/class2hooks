@@ -17,9 +17,8 @@
   "scripts": {
     "test": "jest",
     "dev": "yarn test --watch",
-    "coverage": "jest --coverage && cat ./tests/coverage/lcov.info",
-    "precoveralls": "yarn coverage",
-    "coveralls": "coveralls coverage/lcov.info"
+    "coverage": "jest --coverage && cat coverage/lcov.info",
+    "coveralls": "jest --coverage --coverageReporters=text-lcov | coveralls"
   },
   "dependencies": {
     "ast-types": "^0.12.4",
