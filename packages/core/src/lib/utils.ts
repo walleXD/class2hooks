@@ -4,7 +4,10 @@ import j, {
   ClassDeclaration,
   ImportDeclaration,
   ImportSpecifier,
-  MethodDefinition
+  MethodDefinition,
+  JSXElement,
+  ExpressionStatement,
+  AssignmentExpression
 } from 'jscodeshift'
 import { Collection } from 'jscodeshift/src/Collection'
 
@@ -96,9 +99,14 @@ const findReactComponentNameByParent = (
     .at(0)
 
   const paths = componentImportSpecifier.paths()
-  return paths.length
-    ? paths[0].value.local.name
-    : undefined
+
+  if (paths.length > 0) {
+    paths[0].value.local
+      ? paths[0].value.local.name
+      : undefined
+  }
+
+  return undefined
 }
 
 /**
@@ -139,6 +147,7 @@ const findReactES6ClassDeclarationByParent = (
   return path.find(ClassDeclaration, selector)
 }
 
+// ToDo: Add support for finding ES6 Class declaration w/o parent
 /**
  * Finds all classes that extend React.Component
  * @param {Collection<ASTNode>} path
@@ -173,7 +182,7 @@ const hasReactES6Class = (
  */
 const findJSX = (
   path: Collection<ASTNode>
-): Collection<ASTNode> => path.findJSXElements()
+): Collection<JSXElement> => path.findJSXElements()
 
 /**
  * Checks if the file has JSX
@@ -189,7 +198,7 @@ const hasJSX = (path: Collection<ASTNode>): boolean =>
  */
 const findComponentDidCatchMethod = (
   path: Collection<ASTNode>
-): Collection<ASTNode> =>
+): Collection<MethodDefinition> =>
   path
     .find(MethodDefinition)
     .filter(
@@ -210,7 +219,7 @@ const hasComponentDidCatchMethod = (
  */
 const findGetDerivedStateFromErrorMethod = (
   path: Collection<ASTNode>
-): Collection<ASTNode> =>
+): Collection<MethodDefinition> =>
   path
     .find(MethodDefinition)
     .filter(
@@ -235,7 +244,7 @@ const isConstructor = (node: ASTNode): boolean =>
 
 const findConstructor = (
   path: Collection<ASTNode>
-): Collection<ASTNode> =>
+): Collection<MethodDefinition> =>
   path
     .find(MethodDefinition)
     .filter((p): boolean => isConstructor(p.value))
@@ -250,10 +259,21 @@ const findAssignmentExpressions = (
   return path
 }
 
+// const isStateInit = (path: NodePath<ExpressionStatement>): boolean =>
+//   path.find
+
 const findStateInit = (
-  path: Collection<ASTNode>
-): Collection<ASTNode> => {
+  path: Collection<MethodDefinition>
+): Collection<any> => {
   return path
+    .find(ExpressionStatement)
+    .find(AssignmentExpression)
+    .filter(
+      (p: NodePath): boolean => {
+        p
+        return false
+      }
+    )
 }
 
 /**
@@ -262,7 +282,8 @@ const findStateInit = (
  */
 const getClassName = (
   path: NodePath<ClassDeclaration, ClassDeclaration>
-): string => path.node.id.name
+): string | undefined =>
+  path.node.id ? path.node.id.name : undefined
 
 /**
  * Bails out of transformation

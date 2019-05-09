@@ -25,8 +25,6 @@ export default (
           [importDefaultSpecifier(identifier('React'))],
           literal('react')
         )
-      }
-
-      return null
+      } else throw new Error('No imports')
     }
   )

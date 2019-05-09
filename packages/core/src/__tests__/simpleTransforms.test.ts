@@ -1,5 +1,7 @@
 import { simpleTest } from 'lib/testRunners'
 
+jest.autoMockOff()
+
 describe('transforms correctly', (): void => {
   it('withRender method', (): void =>
     simpleTest('withRender'))

@@ -24,6 +24,7 @@ export default (
     .replaceWith(
       (p): VariableDeclaration => {
         const name = getClassName(p)
+        if (!name) throw new Error('Something broke')
 
         const renderMethod = p.value.body.body.filter(
           isRenderMethod
