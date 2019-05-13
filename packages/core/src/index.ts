@@ -48,6 +48,8 @@ export default (
     return null
   }
 
+  // if (hasConstructor(root)) constrcutorTransformation(root)
+
   runTransformation(root)
   removeReactComponentImport(root)
 

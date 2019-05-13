@@ -4,7 +4,8 @@ import j, {
   ClassDeclaration,
   ImportDeclaration,
   ImportSpecifier,
-  MethodDefinition
+  MethodDefinition,
+  JSXElement
 } from 'jscodeshift'
 import { Collection } from 'jscodeshift/src/Collection'
 
@@ -96,9 +97,14 @@ const findReactComponentNameByParent = (
     .at(0)
 
   const paths = componentImportSpecifier.paths()
-  return paths.length
-    ? paths[0].value.local.name
-    : undefined
+
+  if (paths.length > 0) {
+    paths[0].value.local
+      ? paths[0].value.local.name
+      : undefined
+  }
+
+  return undefined
 }
 
 /**
@@ -139,6 +145,7 @@ const findReactES6ClassDeclarationByParent = (
   return path.find(ClassDeclaration, selector)
 }
 
+// ToDo: Add support for finding ES6 Class declaration w/o parent
 /**
  * Finds all classes that extend React.Component
  * @param {Collection<ASTNode>} path
@@ -173,7 +180,7 @@ const hasReactES6Class = (
  */
 const findJSX = (
   path: Collection<ASTNode>
-): Collection<ASTNode> => path.findJSXElements()
+): Collection<JSXElement> => path.findJSXElements()
 
 /**
  * Checks if the file has JSX
@@ -189,7 +196,7 @@ const hasJSX = (path: Collection<ASTNode>): boolean =>
  */
 const findComponentDidCatchMethod = (
   path: Collection<ASTNode>
-): Collection<ASTNode> =>
+): Collection<MethodDefinition> =>
   path
     .find(MethodDefinition)
     .filter(
@@ -210,7 +217,7 @@ const hasComponentDidCatchMethod = (
  */
 const findGetDerivedStateFromErrorMethod = (
   path: Collection<ASTNode>
-): Collection<ASTNode> =>
+): Collection<MethodDefinition> =>
   path
     .find(MethodDefinition)
     .filter(
@@ -228,13 +235,45 @@ const hasGetDerivedStateFromErrorMethod = (
 ): boolean =>
   findGetDerivedStateFromErrorMethod(path).size() > 0
 
+const isConstructor = (node: ASTNode): boolean =>
+  node.type === 'MethodDefinition' &&
+  node.key.type === 'Identifier' &&
+  node.key.name === 'constructor'
+
+const findConstructor = (
+  path: Collection<ASTNode>
+): Collection<MethodDefinition> =>
+  path
+    .find(MethodDefinition)
+    .filter((p): boolean => isConstructor(p.value))
+
+const hasConstructor = (
+  path: Collection<ASTNode>
+): boolean => findConstructor(path).size() === 1
+
+const findAssignmentExpressions = (
+  path: Collection<ASTNode>
+): Collection<ASTNode> => {
+  return path
+}
+
+/**
+ * Checks if a node is a state dec in constructor method
+ * @param {ASTNode} node
+ */
+const isStateDecleration = (node: ASTNode): boolean =>
+  node.type === 'ExpressionStatement' &&
+  node.expression.type === 'CallExpression' &&
+  node.expression.callee.type === 'MemberExpression'
+
 /**
  * Get the name of a Class
  * @param {Collection<ASTNode>} path
  */
 const getClassName = (
   path: NodePath<ClassDeclaration, ClassDeclaration>
-): string => path.node.id.name
+): string | undefined =>
+  path.node.id ? path.node.id.name : undefined
 
 /**
  * Bails out of transformation
@@ -256,6 +295,7 @@ export {
   hasComponentDidCatchMethod,
   hasGetDerivedStateFromErrorMethod,
   hasOnlyRenderMethod,
+  hasConstructor,
   findReactComponentNameByParent,
   findReactES6ClassDeclaration,
   findReactES6ClassDeclarationByParent,
@@ -263,7 +303,11 @@ export {
   findComponentDidCatchMethod,
   findGetDerivedStateFromErrorMethod,
   findModule,
+  findConstructor,
+  findAssignmentExpressions,
   getClassName,
   isRenderMethod,
+  isConstructor,
+  isStateDecleration,
   skipTransformation
 }

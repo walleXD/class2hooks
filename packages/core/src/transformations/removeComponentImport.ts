@@ -5,9 +5,14 @@ import {
   importDeclaration,
   importDefaultSpecifier,
   identifier,
-  literal
+  literal,
+  CallExpression,
+  importSpecifier,
+  ImportDefaultSpecifier,
+  ImportNamespaceSpecifier,
+  ImportSpecifier,
+  ASTPath
 } from 'jscodeshift'
-import { NodePath } from 'ast-types'
 
 import { findModule } from 'lib/utils'
 
@@ -17,16 +22,35 @@ export default (
   path: Collection<ASTNode>
 ): Collection<ImportDeclaration> | null =>
   findModule(path, 'react').replaceWith(
-    (p: NodePath<ImportDeclaration>): ImportDeclaration => {
+    (p: ASTPath<ImportDeclaration>): ImportDeclaration => {
       const imports = p.value.specifiers
+
+      const hasUseState: boolean =
+        path
+          .find(CallExpression, {
+            callee: {
+              name: 'useState'
+            }
+          })
+          .size() > 0
+
+      const importSpecs: (
+        | ImportDefaultSpecifier
+        | ImportNamespaceSpecifier
+        | ImportSpecifier)[] = [
+        importDefaultSpecifier(identifier('React'))
+      ]
+
+      if (hasUseState)
+        importSpecs.push(
+          importSpecifier(identifier('useState'))
+        )
 
       if (imports.length > 1) {
         return importDeclaration(
-          [importDefaultSpecifier(identifier('React'))],
+          importSpecs,
           literal('react')
         )
-      }
-
-      return null
+      } else throw new Error('No imports')
     }
   )
