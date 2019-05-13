@@ -55,5 +55,3 @@ export default (
 
   return root.toSource()
 }
-
-export const parser = 'babel'
