@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 class OurComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.state({
+    this.state = {
       date: new Date()
-    })
+    }
   }
 
   render() {

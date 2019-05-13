@@ -9,16 +9,18 @@ import {
   VariableDeclaration,
   ASTPath,
   ClassDeclaration,
+  ExpressionStatement,
+  MethodDefinition,
   callExpression,
-  arrayPattern
+  arrayPattern,
+  ObjectExpression
 } from 'jscodeshift'
 import { Collection } from 'jscodeshift/src/Collection'
 import {
   findReactES6ClassDeclaration,
   getClassName,
   isRenderMethod,
-  isConstructor,
-  isStateDecleration
+  isConstructor
 } from 'lib/utils'
 
 export default (
@@ -37,25 +39,29 @@ export default (
           isConstructor
         )[0]
 
-        let constructorBody,
-          stateDec: ASTPath,
-          states: [ASTNode]
+        let states: [ASTNode]
 
         const stmts: VariableDeclaration[] = []
 
-        // ToDo: extract into a seperate function
+        const state = path
+          .find(MethodDefinition, isConstructor)
+          .find(ExpressionStatement, {
+            expression: {
+              left: {
+                property: {
+                  name: 'state'
+                }
+              }
+            }
+          })
+
+        // // ToDo: extract into a seperate function
         if (constructorMethod) {
-          constructorBody =
-            // @ts-ignore
-            constructorMethod.value.body.body
+          const stateProp = state
+            .find(ObjectExpression)
+            .get()
 
-          stateDec = constructorBody.filter(
-            isStateDecleration
-          )[0]
-
-          states =
-            // @ts-ignore
-            stateDec.expression.arguments[0].properties
+          states = stateProp.value.properties
 
           states.forEach(
             (node: ASTNode): void => {
