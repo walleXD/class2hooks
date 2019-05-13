@@ -6,7 +6,11 @@ import {
   returnStatement,
   variableDeclaration,
   variableDeclarator,
-  VariableDeclaration
+  VariableDeclaration,
+  ASTPath,
+  ClassDeclaration,
+  callExpression,
+  arrayPattern
 } from 'jscodeshift'
 import { Collection } from 'jscodeshift/src/Collection'
 import {
@@ -23,7 +27,9 @@ export default (
   findReactES6ClassDeclaration(path) // collection of classes
     // .filter((p): boolean => hasOnlyRenderMethod(p)) // makes sure the classes only have render methods
     .replaceWith(
-      (p): VariableDeclaration => {
+      (
+        p: ASTPath<ClassDeclaration>
+      ): VariableDeclaration => {
         const name = getClassName(p)
         if (!name) throw new Error('Something broke')
 
@@ -31,7 +37,13 @@ export default (
           isConstructor
         )[0]
 
-        let constructorBody, stateDec: ASTNode, states
+        let constructorBody,
+          stateDec: ASTPath,
+          states: [ASTNode]
+
+        const stmts: VariableDeclaration[] = []
+
+        // ToDo: extract into a seperate function
         if (constructorMethod) {
           constructorBody =
             // @ts-ignore
@@ -44,9 +56,33 @@ export default (
           states =
             // @ts-ignore
             stateDec.expression.arguments[0].properties
+
+          states.forEach(
+            (node: ASTNode): void => {
+              // @ts-ignore
+              const name: string = node.key.name
+              const newName =
+                name.charAt(0).toUpperCase() + name.slice(1)
+              // @ts-ignore
+              const val = node.value
+
+              stmts.push(
+                variableDeclaration('const', [
+                  variableDeclarator(
+                    arrayPattern([
+                      identifier(name),
+                      identifier(`update${newName}`)
+                    ]),
+                    callExpression(identifier('useState'), [
+                      val
+                    ])
+                  )
+                ])
+              )
+            }
+          )
         }
 
-        const stateDecStatements = () => {}
         const renderMethod = p.value.body.body.filter(
           isRenderMethod
         )[0]
@@ -62,6 +98,7 @@ export default (
             arrowFunctionExpression(
               [],
               blockStatement([
+                ...stmts,
                 returnStatement(renderReturn)
               ])
             )

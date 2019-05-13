@@ -7,14 +7,10 @@ import {
 import { Collection } from 'jscodeshift/src/Collection'
 import runChecks from 'lib/runChecks'
 import { IRuntimeOptions } from './lib/types'
-import {
-  skipTransformation,
-  hasConstructor
-} from './lib/utils'
+import { skipTransformation } from './lib/utils'
 
 import runTransformation from './transformations/pure'
 import removeReactComponentImport from './transformations/removeComponentImport'
-import constrcutorTransformation from './transformations/constrcutor'
 
 /**
  * Pure Class To Functional Component
@@ -59,3 +55,5 @@ export default (
 
   return root.toSource()
 }
+
+export const parser = 'babel'

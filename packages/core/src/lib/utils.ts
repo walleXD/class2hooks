@@ -5,9 +5,7 @@ import j, {
   ImportDeclaration,
   ImportSpecifier,
   MethodDefinition,
-  JSXElement,
-  ExpressionStatement,
-  AssignmentExpression
+  JSXElement
 } from 'jscodeshift'
 import { Collection } from 'jscodeshift/src/Collection'
 
@@ -268,23 +266,6 @@ const isStateDecleration = (node: ASTNode): boolean =>
   node.expression.type === 'CallExpression' &&
   node.expression.callee.type === 'MemberExpression'
 
-// const isStateInit = (path: NodePath<ExpressionStatement>): boolean =>
-//   path.find
-
-const findStateInit = (
-  path: Collection<MethodDefinition>
-): Collection<any> => {
-  return path
-    .find(ExpressionStatement)
-    .find(AssignmentExpression)
-    .filter(
-      (p: NodePath): boolean => {
-        p
-        return false
-      }
-    )
-}
-
 /**
  * Get the name of a Class
  * @param {Collection<ASTNode>} path
@@ -323,6 +304,7 @@ export {
   findGetDerivedStateFromErrorMethod,
   findModule,
   findConstructor,
+  findAssignmentExpressions,
   getClassName,
   isRenderMethod,
   isConstructor,
