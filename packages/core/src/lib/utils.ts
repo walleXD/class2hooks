@@ -259,6 +259,15 @@ const findAssignmentExpressions = (
   return path
 }
 
+/**
+ * Checks if a node is a state dec in constructor method
+ * @param {ASTNode} node
+ */
+const isStateDecleration = (node: ASTNode): boolean =>
+  node.type === 'ExpressionStatement' &&
+  node.expression.type === 'CallExpression' &&
+  node.expression.callee.type === 'MemberExpression'
+
 // const isStateInit = (path: NodePath<ExpressionStatement>): boolean =>
 //   path.find
 
@@ -316,5 +325,7 @@ export {
   findConstructor,
   getClassName,
   isRenderMethod,
+  isConstructor,
+  isStateDecleration,
   skipTransformation
 }

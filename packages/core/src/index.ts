@@ -15,6 +15,7 @@ import {
 import runTransformation from './transformations/pure'
 import removeReactComponentImport from './transformations/removeComponentImport'
 import constrcutorTransformation from './transformations/constrcutor'
+
 /**
  * Pure Class To Functional Component
  * =============================
@@ -51,7 +52,7 @@ export default (
     return null
   }
 
-  if (hasConstructor(root)) constrcutorTransformation(root)
+  // if (hasConstructor(root)) constrcutorTransformation(root)
 
   runTransformation(root)
   removeReactComponentImport(root)
