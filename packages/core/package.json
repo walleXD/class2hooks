@@ -24,7 +24,7 @@
     "ast-types": "^0.12.4",
     "jscodeshift": "^0.6.4",
     "jscodeshift-helper": "^1.1.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "recast": "^0.17.6"
   }
 }
